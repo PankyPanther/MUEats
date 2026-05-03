@@ -137,3 +137,10 @@ Each meal is scored 0–100 against 1/3 of the user's daily goals:
 - **Green ≥ 80%** — Best Match
 - **Yellow 50–79%** — Moderate  
 - **Red < 50%** — Low Match
+
+---
+
+## Colaborators and Contributions
+Sage Tipton   - Web Scraping
+Dru Frazier   - Flask + Mongo
+Donovan Davis - Front End
