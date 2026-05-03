@@ -140,7 +140,7 @@ Each meal is scored 0–100 against 1/3 of the user's daily goals:
 
 ---
 
-## Colaborators and Contributions
-Sage Tipton   - Web Scraping
-Dru Frazier   - Flask + Mongo
-Donovan Davis - Front End
+## Collaborators and Contributions
+- Sage Tipton   - Web Scraping
+- Dru Frazier   - Flask + Mongo
+- Donovan Davis - Front End
