@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUEats — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #E8294A;
+            --dark-red: #C3142D;
+            --bg: #0F0F0F;
+            --card-bg: rgba(22, 20, 20, 0.95);
+            --charcoal: #F0EBE3;
+            --mid: #A09590;
+            --border: rgba(232, 41, 74, 0.25);
+            --input-bg: rgba(255,255,255,0.05);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(232,41,74,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 90%, rgba(232,41,74,0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: ''; position: fixed; inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 24px 24px; pointer-events: none;
+        }
+
+        .nav-pills {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; z-index: 100;
+            background: rgba(26,26,26,0.95);
+            border: 1px solid rgba(232,41,74,0.2);
+            border-radius: 99px; padding: 6px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+        }
+
+        .nav-pills button {
+            font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+            letter-spacing: 1px; padding: 6px 16px;
+            border: none; border-radius: 99px; cursor: pointer;
+            background: transparent; color: var(--mid); transition: all 0.2s;
+        }
+        .nav-pills button.active { background: var(--red); color: white; }
+
+        .card {
+            position: relative; z-index: 1;
+            background: var(--card-bg); backdrop-filter: blur(12px);
+            border: 1.5px solid var(--border); border-radius: 4px;
+            padding: 48px 44px 44px; width: 100%; max-width: 420px;
+            box-shadow: 0 4px 0 var(--red), 0 6px 40px rgba(232,41,74,0.15), 0 2px 80px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s cubic-bezier(.16,1,.3,1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', sans-serif; font-size: 64px;
+            letter-spacing: 4px; line-height: 1;
+            margin-bottom: 36px; text-align: center;
+        }
+        .logo .mu   { color: var(--red); }
+        .logo .eats { color: var(--charcoal); }
+
+        .subtitle {
+            font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--red); text-align: center;
+            margin-top: -28px; margin-bottom: 36px; font-weight: 500;
+        }
+
+        .page-label {
+            font-size: 11px; font-weight: 500; letter-spacing: 3px;
+            text-transform: uppercase; color: rgba(240,235,227,0.2);
+            text-align: center; margin-bottom: 28px;
+        }
+
+        label {
+            display: block; font-size: 11px; font-weight: 500;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: var(--mid); margin-bottom: 8px;
+        }
+
+        .input-wrap { margin-bottom: 20px; }
+
+        input {
+            width: 100%; padding: 14px 16px;
+            font-family: 'DM Sans', sans-serif; font-size: 15px;
+            color: var(--charcoal); background: var(--input-bg);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 2px; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input::placeholder { color: rgba(160,149,144,0.5); }
+        input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(232,41,74,0.12); }
+        input.err   { border-color: var(--red); background: rgba(232,41,74,0.06); }
+
+        .hint { font-size: 11px; color: rgba(160,149,144,0.6); margin-top: 5px; }
+        .hint.err { color: #FF7A8A; }
+        .hint.ok  { color: #5DBE87; }
+
+        .mu-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(232,41,74,0.12); color: #FF8A9A;
+            font-size: 10px; font-weight: 500; letter-spacing: 1px;
+            padding: 2px 8px; border-radius: 99px;
+            border: 1px solid rgba(232,41,74,0.3);
+        }
+
+        .flash {
+            padding: 10px 14px; border-radius: 2px; font-size: 13px;
+            margin-bottom: 20px; border-left: 3px solid var(--red);
+            background: rgba(232,41,74,0.10); color: #FF7A8A;
+            display: none;
+        }
+        .flash.show    { display: block; }
+        .flash.ok      { border-left-color: #5DBE87; background: rgba(61,190,122,0.10); color: #5DBE87; }
+
+        .btn-google {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 13px;
+            font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+            color: var(--charcoal); background: rgba(255,255,255,0.06);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 2px; cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-google:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.22); }
+
+        .or-divider {
+            display: flex; align-items: center; gap: 12px; margin: 18px 0;
+            color: rgba(160,149,144,0.5); font-size: 11px;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+        .or-divider::before, .or-divider::after {
+            content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07);
+        }
+
+        .google-note {
+            padding: 10px 14px; border-radius: 2px; font-size: 12px;
+            margin-bottom: 18px; border-left: 3px solid rgba(232,41,74,0.5);
+            background: rgba(232,41,74,0.07); color: var(--mid); line-height: 1.6;
+        }
+        .google-note strong { color: var(--charcoal); font-weight: 500; }
+        .google-note code   { font-family: monospace; font-size: 11px; color: #FF8A9A; }
+
+        .btn {
+            display: block; width: 100%; padding: 15px; margin-top: 8px;
+            font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px;
+            color: white; background: var(--red);
+            border: none; border-radius: 2px; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:hover   { background: var(--dark-red); }
+        .btn:active  { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .links {
+            margin-top: 24px; display: flex; flex-direction: column;
+            align-items: center; gap: 10px;
+        }
+        .links a {
+            font-size: 13px; color: var(--mid); text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: color 0.2s, border-color 0.2s; cursor: pointer;
+        }
+        .links a:hover { color: var(--red); border-bottom-color: var(--red); }
+        .sep { width: 100%; height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+
+        .mu-lock {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 26px; padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+            color: rgba(160,149,144,0.4);
+        }
+        .mu-lock-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); opacity: 0.6; }
+
+        .page { display: none; }
+        .page.active { display: block; animation: slideUp 0.4s cubic-bezier(.16,1,.3,1) both; }
+    </style>
+</head>
+<body>
+
+<div class="nav-pills">
+    <button class="active" onclick="switchPage('login',this)">Login</button>
+    <button onclick="switchPage('signup',this)">Sign Up</button>
+    <button onclick="switchPage('reset',this)">Reset Password</button>
+    <button onclick="switchPage('error',this)">Error State</button>
+</div>
+
+<div class="card">
+    <div class="logo"><span class="mu">MU</span><span class="eats">Eats</span></div>
+    <div class="subtitle">Miami University Food Platform</div>
+
+    <!-- LOGIN -->
+    <div class="page active" id="page-login">
+        <div class="page-label">Sign In</div>
+        <button class="btn-google" onclick="handleGoogleLogin()">
+            <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue with Google
+        </button>
+        <div class="or-divider"><span>or</span></div>
+        <div id="login-flash" class="flash"></div>
+        <div class="input-wrap">
+            <label>Email</label>
+            <input type="email" id="login-email" placeholder="yourname@miamioh.edu"
+                   oninput="liveCheck('login-email','login-email-hint')"
+                   onkeydown="if(event.key==='Enter')handleLogin()">
+            <p class="hint" id="login-email-hint"><span class="mu-badge">@miamioh.edu only</span></p>
+        </div>
+        <div class="input-wrap">
+            <label>Password</label>
+            <input type="password" id="login-pass" placeholder="••••••••"
+                   onkeydown="if(event.key==='Enter')handleLogin()">
+        </div>
+        <button class="btn" id="login-btn" onclick="handleLogin()">Log In</button>
+        <div class="links">
+            <a onclick="switchPage('signup',document.querySelectorAll('.nav-pills button')[1])">Sign Up? Create an account</a>
+            <div class="sep"></div>
+            <a onclick="switchPage('reset',document.querySelectorAll('.nav-pills button')[2])">Reset Password</a>
+        </div>
+        <div class="mu-lock">
+            <div class="mu-lock-dot"></div>Miami University students &amp; staff only<div class="mu-lock-dot"></div>
+        </div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="page" id="page-signup">
+        <div class="page-label">Create Account</div>
+        <div class="google-note">
+            <strong>Miami email required</strong> — When Google prompts you, select your
+            <code>@miamioh.edu</code> address. Personal Gmail accounts will be blocked.
+        </div>
+        <button class="btn-google" onclick="handleGoogleSignup()">
+            <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Sign Up with Google
+        </button>
+        <div class="or-divider"><span>or</span></div>
+        <div id="signup-flash" class="flash"></div>
+        <div class="input-wrap">
+            <label>Full Name</label>
+            <input type="text" id="signup-name" placeholder="Jane Doe"
+                   onkeydown="if(event.key==='Enter')handleSignup()">
+        </div>
+        <div class="input-wrap">
+            <label>Email</label>
+            <input type="email" id="signup-email" placeholder="yourname@miamioh.edu"
+                   oninput="liveCheck('signup-email','signup-email-hint')"
+                   onkeydown="if(event.key==='Enter')handleSignup()">
+            <p class="hint" id="signup-email-hint"><span class="mu-badge">@miamioh.edu only</span></p>
+        </div>
+        <div class="input-wrap">
+            <label>Password</label>
+            <input type="password" id="signup-pass" placeholder="Min. 8 characters"
+                   onkeydown="if(event.key==='Enter')handleSignup()">
+        </div>
+        <div class="input-wrap">
+            <label>Confirm Password</label>
+            <input type="password" id="signup-confirm" placeholder="Repeat password"
+                   onkeydown="if(event.key==='Enter')handleSignup()">
+        </div>
+        <button class="btn" id="signup-btn" onclick="handleSignup()">Create Account</button>
+        <div class="links">
+            <a onclick="switchPage('login',document.querySelectorAll('.nav-pills button')[0])">Already have an account? Log in</a>
+        </div>
+        <div class="mu-lock">
+            <div class="mu-lock-dot"></div>Miami University students &amp; staff only<div class="mu-lock-dot"></div>
+        </div>
+    </div>
+
+    <!-- RESET PASSWORD -->
+    <div class="page" id="page-reset">
+        <div class="page-label">Reset Password</div>
+        <div id="reset-flash" class="flash"></div>
+        <div class="input-wrap">
+            <label>Email</label>
+            <input type="email" id="reset-email" placeholder="yourname@miamioh.edu"
+                   oninput="liveCheck('reset-email','reset-email-hint')"
+                   onkeydown="if(event.key==='Enter')handleReset()">
+            <p class="hint" id="reset-email-hint">We'll send a reset link to your @miamioh.edu address</p>
+        </div>
+        <button class="btn" onclick="handleReset()">Send Reset Link</button>
+        <div class="links">
+            <a onclick="switchPage('login',document.querySelectorAll('.nav-pills button')[0])">Back to Login</a>
+        </div>
+    </div>
+
+    <!-- ERROR STATE (preview) -->
+    <div class="page" id="page-error">
+        <div class="page-label">Sign In</div>
+        <div class="flash show">You must use a @miamioh.edu email address to access MUEats.</div>
+        <div class="input-wrap">
+            <label>Email</label>
+            <input type="email" value="john@gmail.com" class="err">
+            <p class="hint err">Must be a @miamioh.edu address</p>
+        </div>
+        <div class="input-wrap">
+            <label>Password</label>
+            <input type="password" value="password123" placeholder="••••••••">
+        </div>
+        <button class="btn">Log In</button>
+        <div class="links">
+            <a onclick="switchPage('signup',document.querySelectorAll('.nav-pills button')[1])">Sign Up? Create an account</a>
+            <div class="sep"></div>
+            <a onclick="switchPage('reset',document.querySelectorAll('.nav-pills button')[2])">Reset Password</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ── Page switching ──
+    function switchPage(name, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-pills button').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        if (btn) btn.classList.add('active');
+    }
+
+    // ── Helpers ──
+    function isMU(email) { return email.trim().toLowerCase().endsWith('@miamioh.edu'); }
+
+    function liveCheck(inputId, hintId) {
+        const val   = document.getElementById(inputId).value;
+        const input = document.getElementById(inputId);
+        const hint  = document.getElementById(hintId);
+        if (!val) {
+            input.classList.remove('err');
+            hint.className = 'hint';
+            hint.innerHTML = '<span class="mu-badge">@miamioh.edu only</span>';
+            return;
+        }
+        if (!isMU(val)) {
+            input.classList.add('err');
+            hint.className = 'hint err';
+            hint.textContent = 'Must be a @miamioh.edu address';
+        } else {
+            input.classList.remove('err');
+            hint.className = 'hint ok';
+            hint.textContent = '✓ Valid Miami University email';
+        }
+    }
+
+    function flash(id, msg, ok = false) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'flash show' + (ok ? ' ok' : '');
+    }
+
+    function clearFlash(id) { document.getElementById(id).className = 'flash'; }
+
+    function setBusy(id, busy, label) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = busy;
+        btn.textContent = label;
+    }
+
+    // ── Login ──
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const pass  = document.getElementById('login-pass').value;
+        clearFlash('login-flash');
+
+        if (!email)     { flash('login-flash', 'Please enter your Miami email address.'); return; }
+        if (!isMU(email)) {
+            document.getElementById('login-email').classList.add('err');
+            flash('login-flash', 'Only @miamioh.edu email addresses are allowed.');
+            return;
+        }
+        if (!pass) { flash('login-flash', 'Please enter your password.'); return; }
+
+        setBusy('login-btn', true, 'Signing in…');
+
+        try {
+            const res  = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                flash('login-flash', '✓ Welcome back! Redirecting…', true);
+                setTimeout(() => window.location.href = data.redirect || '/dashboard', 600);
+            } else {
+                flash('login-flash', data.error || 'Login failed — please try again.');
+                setBusy('login-btn', false, 'Log In');
+            }
+        } catch {
+            flash('login-flash', 'Cannot reach server — is Flask running?');
+            setBusy('login-btn', false, 'Log In');
+        }
+    }
+
+    // ── Sign Up ──
+    async function handleSignup() {
+        const name    = document.getElementById('signup-name').value.trim();
+        const email   = document.getElementById('signup-email').value.trim();
+        const pass    = document.getElementById('signup-pass').value;
+        const confirm = document.getElementById('signup-confirm').value;
+        clearFlash('signup-flash');
+
+        if (!name)      { flash('signup-flash', 'Please enter your full name.'); return; }
+        if (!email)     { flash('signup-flash', 'Please enter your Miami email address.'); return; }
+        if (!isMU(email)) {
+            document.getElementById('signup-email').classList.add('err');
+            flash('signup-flash', 'Only @miamioh.edu email addresses can create an account.');
+            return;
+        }
+        if (pass.length < 8) { flash('signup-flash', 'Password must be at least 8 characters.'); return; }
+        if (pass !== confirm) { flash('signup-flash', 'Passwords do not match.'); return; }
+
+        setBusy('signup-btn', true, 'Creating account…');
+
+        try {
+            const res  = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, name, password: pass })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                flash('signup-flash', '✓ Account created! Redirecting…', true);
+                setTimeout(() => window.location.href = data.redirect || '/dashboard', 600);
+            } else {
+                flash('signup-flash', data.error || 'Signup failed — please try again.');
+                setBusy('signup-btn', false, 'Create Account');
+            }
+        } catch {
+            flash('signup-flash', 'Cannot reach server — is Flask running?');
+            setBusy('signup-btn', false, 'Create Account');
+        }
+    }
+
+    // ── Reset ──
+    async function handleReset() {
+        const email = document.getElementById('reset-email').value.trim();
+        clearFlash('reset-flash');
+        if (!email)     { flash('reset-flash', 'Please enter your Miami email address.'); return; }
+        if (!isMU(email)) {
+            document.getElementById('reset-email').classList.add('err');
+            flash('reset-flash', 'Password reset is only available for @miamioh.edu addresses.');
+            return;
+        }
+        flash('reset-flash', '✓ Reset link sent to ' + email, true);
+    }
+
+    // ── Google ──
+    function handleGoogleLogin() {
+        flash('login-flash', '→ Redirecting to Google — use your @miamioh.edu account.', true);
+        setTimeout(() => window.location.href = '/auth/google', 700);
+    }
+
+    function handleGoogleSignup() {
+        flash('signup-flash', '→ Redirecting to Google — only @miamioh.edu accounts accepted.', true);
+        setTimeout(() => window.location.href = '/auth/google', 700);
+    }
+</script>
+</body>
+</html>
