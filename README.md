@@ -33,20 +33,6 @@ sudo apt install firefox
 
 geckodriver is downloaded automatically by `webdriver-manager`.
 
-### Option B — Chrome / Chromium
-
-```bash
-# macOS
-brew install --cask google-chrome
-
-# Ubuntu
-sudo apt install chromium-browser
-
-# Windows — download from https://www.google.com/chrome/
-```
-
-chromedriver is downloaded automatically by `webdriver-manager`.
-
 ### Running the scraper
 
 **Automatic** — the app checks on startup if today's data is loaded.
