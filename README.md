@@ -17,9 +17,9 @@ python app.py
 ## Making the Scraper Work (Required for Live Data)
 
 The scraper drives a real browser to pull today's menu from
-`dineoncampus.com/MiamiUniversity`. It needs either Firefox or Chrome installed.
+`dineoncampus.com/MiamiUniversity`. It needs Firefox.
 
-### Option A — Firefox (recommended)
+### Insure FireFox is installed
 
 ```bash
 # macOS
