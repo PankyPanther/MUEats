@@ -10,7 +10,7 @@ Changes:
   3. /api/goals and /api/body persist to _user_store across requests.
 """
 
-from flask import Flask, render_template, jsonify, request, session, redirect 
+from flask import Flask, render_template, jsonify, request, session, redirect
 from datetime import datetime, date, timedelta
 import json, os, re, math, threading, time
 
@@ -373,7 +373,7 @@ def run_scraper(target_date: str = None) -> dict:
     try:
         import sys
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        from Scraper.scraper_main import RestaurantScraper  # type: ignore
+        from scraper_main import RestaurantScraper  # type: ignore
 
         output_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "menu_data.json")
         print(f"[+] Starting scrape for {target_date} → {output_file}")
@@ -493,15 +493,13 @@ def _current_user() -> dict:
 # ─────────────────────────────────────────────────────────────
 #  ROUTES — Pages
 # ─────────────────────────────────────────────────────────────
-app = Flask(__name__, template_folder='frontEnd')
-
 @app.route("/")
 def index():
     return render_template("login.html")
 
+
 @app.route("/dashboard")
 def dashboard():
-    # Note: Ensure _get_session_email() is defined elsewhere in your code
     if not _get_session_email():
         return redirect("/")
     return render_template("dashboard.html")
