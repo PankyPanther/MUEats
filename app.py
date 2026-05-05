@@ -493,13 +493,15 @@ def _current_user() -> dict:
 # ─────────────────────────────────────────────────────────────
 #  ROUTES — Pages
 # ─────────────────────────────────────────────────────────────
+app = Flask(__name__, template_folder='frontEnd')
+
 @app.route("/")
 def index():
     return render_template("login.html")
 
-
 @app.route("/dashboard")
 def dashboard():
+    # Note: Ensure _get_session_email() is defined elsewhere in your code
     if not _get_session_email():
         return redirect("/")
     return render_template("dashboard.html")
